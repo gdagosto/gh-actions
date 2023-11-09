@@ -23,7 +23,7 @@ jobs:
           skipInvalidTags: true
       - name: Generate changelog
         id: changelog
-        uses: requarks/changelog-action
+        uses: requarks/changelog-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.semver.outputs.nextStrict }}
