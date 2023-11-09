@@ -18,9 +18,12 @@ jobs:
           ls
 
       - name: Baixa o zip
-        run: gh release download 0.2.0 -R ${{ github.repository }}
+        run: gh release download 0.2.0 -p python.tar.gz -R ${{ github.repository }}
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extrai o zip
+        run: tar -xvf python.tar.gz
 
       # - name: Baixa o zip com o python
       #   uses: robinraju/release-downloader@v1.8
