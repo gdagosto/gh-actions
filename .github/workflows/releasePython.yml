@@ -29,7 +29,7 @@ jobs:
         run: |
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git tag $NEXT_TAG
+            git tag ${{ steps.semver.outputs.nextStrict }}
             git push --tags
         env:
           NPM_AUTH_TOKEN: ${{ steps.semver.outputs.nextStrict }}
