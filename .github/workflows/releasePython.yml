@@ -26,11 +26,12 @@ jobs:
 
       # Aqui entraria o processo de build com a tag nova
       - name: Adiciona uma tag com a versão nova
-        uses: anothrNick/github-tag-action@1.64.0
-        id: "tag_create"
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          CUSTOM_TAG: ${{ steps.semver.outputs.nextStrict }}
+        run: |
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+            git tag $NEXT_TAG
+        env:
+          NPM_AUTH_TOKEN: ${{ steps.semver.outputs.nextStrict }}
   
       - name: Gera o changelog
         uses: requarks/changelog-action@v1
