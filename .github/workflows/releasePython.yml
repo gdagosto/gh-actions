@@ -18,7 +18,7 @@ jobs:
         uses: ietf-tools/semver-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: desenv
+          branch: main
           patchAll: true
           skipInvalidTags: true
           prefix: 'python/'
@@ -31,4 +31,4 @@ jobs:
           draft: true
           generateReleaseNotes: true
           tag: ${{ steps.semver.outputs.nextStrict }}
-          commit: 'desenv'
+          commit: 'main'
