@@ -22,10 +22,12 @@ jobs:
           patchAll: true
           skipInvalidTags: true
           prefix: 'python/'
+      - name: Zip
+        run: tar.exe acvf python.tar.gz -C .github\workflows releasePython.yml
       - name: release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: 'apps/python/dist/main'
+          artifacts: 'python.tar.gz'
           draft: true
           generateReleaseNotes: true
           tag: ${{ steps.semver.outputs.nextStrict }}
