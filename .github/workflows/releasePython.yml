@@ -21,6 +21,12 @@ jobs:
           branch: main
           patchAll: true
           skipInvalidTags: true
+      - name: Generate changelog
+        id: changelog
+        uses: requarks/changelog-action
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.semver.outputs.nextStrict }}
       - name: Zip
         run: tar.exe acvf python.tar.gz -C .github\workflows releasePython.yml
       - name: release
@@ -29,5 +35,6 @@ jobs:
           artifacts: 'python.tar.gz'
           draft: true
           generateReleaseNotes: true
+          body: ${{ steps.changelog.outputs.changes }}
           tag: ${{ steps.semver.outputs.nextStrict }}
           commit: 'main'
