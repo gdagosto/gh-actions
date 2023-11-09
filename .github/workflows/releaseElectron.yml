@@ -1,0 +1,26 @@
+name: Release electron on-demand
+
+on: [workflow_dispatch]
+
+jobs:
+  build-python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout da branch
+        uses: actions/checkout@v3
+
+      - name: Printa o ls
+        run: ls
+
+      - name: Baixa o zip com o python
+        uses: robinraju/release-downloader@v1.8
+        with: 
+          fileName: "python.tar.gz"
+          extract: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Printa o ls denovo
+        run: ls
