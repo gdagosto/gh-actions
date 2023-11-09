@@ -12,24 +12,36 @@ jobs:
       run:
         shell: powershell
     steps:
-      - uses: actions/checkout@v3
-      - name: Get Next Version
-        id: semver
+      - name: Checkout da branch
+        uses: actions/checkout@v3
+
+      - name: Calcula proxima versão (semver)
         uses: ietf-tools/semver-action@v1
+        id: semver
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: main
           patchAll: true
           skipInvalidTags: true
-      - name: Generate changelog
-        id: changelog
+
+      # Aqui entraria o processo de build com a tag nova
+      - name: Adiciona uma tag com a versão nova
+        uses: rickstaa/action-create-tag@v1
+        id: "tag_create"
+        with:
+          tag: ${{ steps.semver.outputs.nextStrict }}
+  
+      - name: Gera o changelog
         uses: requarks/changelog-action@v1
+        id: changelog
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.semver.outputs.nextStrict }}
-      - name: Zip
+
+      - name: Gera um zip com os artefatos do release
         run: tar.exe acvf python.tar.gz -C .github\workflows releasePython.yml
-      - name: release
+
+      - name: Gera o rascunho do release
         uses: ncipollo/release-action@v1
         with:
           artifacts: 'python.tar.gz'
@@ -37,4 +49,3 @@ jobs:
           generateReleaseNotes: true
           body: ${{ steps.changelog.outputs.changes }}
           tag: ${{ steps.semver.outputs.nextStrict }}
-          commit: 'main'
