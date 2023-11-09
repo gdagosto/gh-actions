@@ -1,0 +1,32 @@
+name: Release python on-demand
+
+on: [workflow_dispatch]
+
+jobs:
+  build-python:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get Next Version
+        id: semver
+        uses: ietf-tools/semver-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: desenv
+          patchAll: true
+          skipInvalidTags: true
+          prefix: 'python/'
+      - name: release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: 'apps/python/dist/main'
+          draft: true
+          generateReleaseNotes: true
+          tag: ${{ steps.semver.outputs.nextStrict }}
+          commit: 'desenv'
