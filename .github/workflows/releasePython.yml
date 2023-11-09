@@ -21,7 +21,6 @@ jobs:
           branch: main
           patchAll: true
           skipInvalidTags: true
-          prefix: 'python/'
       - name: Zip
         run: tar.exe acvf python.tar.gz -C .github\workflows releasePython.yml
       - name: release
