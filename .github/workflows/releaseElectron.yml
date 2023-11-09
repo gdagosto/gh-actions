@@ -20,6 +20,7 @@ jobs:
         with: 
           fileName: "python.tar.gz"
           extract: true
+          tag: "0.2.0"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Printa o ls denovo
