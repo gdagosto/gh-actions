@@ -13,14 +13,19 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Printa o ls
-        run: ls
+        run: |
+          echo "${{ github.repository }}"
+          ls
 
-      - name: Baixa o zip com o python
-        uses: robinraju/release-downloader@v1.8
-        with: 
-          fileName: "python.tar.gz"
-          extract: true
-          tag: "0.2.0"
+      - name: Baixa o zip
+        run: gh release download 0.2.0 -R ${{ github.repository }}
+
+      # - name: Baixa o zip com o python
+      #   uses: robinraju/release-downloader@v1.8
+      #   with: 
+      #     fileName: "python.tar.gz"
+      #     extract: true
+      #     tag: "0.1.0"
 
       - name: Printa o ls denovo
         run: ls
