@@ -1,0 +1,25 @@
+name: Pega ultima tag
+
+on: [workflow_dispatch]
+
+jobs:
+  build-python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout da branch
+        uses: actions/checkout@v3
+        with:
+            fetch-tags: true
+
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          prefix: python
+
+      - name: Printa a tag
+        run: |
+          echo "${{ steps.previoustag.outputs.tag }}"
