@@ -1,0 +1,86 @@
+name: Output to next job
+
+on: [workflow_dispatch]
+
+env:
+  TAR_GZ_NAME: python.tar.gz
+
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+        nextStrict: ${{steps.semver.outputs.nextStrict}}
+    steps:
+      - name: Checkout da branch
+        uses: actions/checkout@v3
+
+      - name: Calcula proxima versão (semver)
+        uses: ietf-tools/semver-action@v1
+        id: semver
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          patchAll: true
+          skipInvalidTags: true
+
+      # Aqui entraria o processo de build com a tag nova
+      - name: Adiciona uma tag com a versão nova
+        run: |
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag ${{ steps.semver.outputs.nextStrict }}
+            git push --tags
+        env:
+          NPM_AUTH_TOKEN: ${{ steps.semver.outputs.nextStrict }}
+  
+      - name: Gera o changelog
+        uses: requarks/changelog-action@v1
+        id: changelog
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.semver.outputs.nextStrict }}
+
+      - name: Gera um zip com os artefatos do release
+        run: tar.exe acvf ${{env.TAR_GZ_NAME}} -C .github\workflows releasePython.yml
+
+      - name: Gera o rascunho do release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ${{env.TAR_GZ_NAME}}
+          draft: true
+          generateReleaseNotes: true
+          body: ${{ steps.changelog.outputs.changes }}
+          tag: ${{ steps.semver.outputs.nextStrict }}
+
+  job2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: job1
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout da branch
+        uses: actions/checkout@v3
+  
+      - name: Printa o ls
+        run: |
+          echo "${{ github.repository }}"
+          ls
+  
+      - name: Baixa o zip
+        run: gh release download ${{needs.job1.outputs.nextStrict}} -p ${{env.TAR_GZ_NAME}} -R ${{ github.repository }}
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Extrai o zip
+        run: tar -xvf ${{env.TAR_GZ_NAME}}
+  
+      - name: Printa o ls denovo
+        run: |
+          ls
+          cat ${{env.TAR_GZ_NAME}}
+      
